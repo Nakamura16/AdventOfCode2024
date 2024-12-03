@@ -1,4 +1,5 @@
 ﻿using FileReader;
+using System.Runtime.CompilerServices;
 
 namespace DayTwo;
 
@@ -13,33 +14,30 @@ public class Program
 
         foreach (var line in lines)
         {
-            var numbers = line.Split(" ");
+            var numbers = line.Split(" ")
+                .Select(n => int.Parse(n))
+                .ToList();
 
-            bool isDecreasing = int.Parse(numbers[0]) > int.Parse(numbers[1]);
-            
-            for (var i = 0; i < numbers.Length; i++)
+            var resport = new Report(numbers);
+            resport.CheckIsSafe();
+
+            if (resport.IsSafe)
             {
-                if (i == numbers.Length - 1)
+                result ++;
+            }
+            else
+            {
+                for (var i = 0; i < resport.Numbers.Count; i++)
                 {
-                    bool isLastOrderEqual = int.Parse(numbers[i-1]) > int.Parse(numbers[i]) == isDecreasing;
-                    var lastLevel = Math.Abs(int.Parse(numbers[0]) - int.Parse(numbers[1]));
-                    var isLastLevelSafe = lastLevel == 1 | lastLevel == 2 || lastLevel == 3;
-                    if (isLastOrderEqual && isLastLevelSafe) 
+                    var dampenedReport = new Report(new List<int>(resport.Numbers));
+                    dampenedReport.Numbers.RemoveAt(i);
+
+                    dampenedReport.CheckIsSafe();
+                    if (dampenedReport.IsSafe)
                     {
-                        result++; 
+                        result++;
                         break;
                     }
-                }
-                bool isOrderEqual = int.Parse(numbers[i]) > int.Parse(numbers[i+1]) == isDecreasing;
-                var level = Math.Abs(int.Parse(numbers[i]) - int.Parse(numbers[i+1]));
-                var isLevelSafe = level == 1 | level == 2 || level == 3;
-                if (isOrderEqual && isLevelSafe)
-                {
-                    continue;
-                }
-                else
-                {
-                    break;
                 }
             }
         }
