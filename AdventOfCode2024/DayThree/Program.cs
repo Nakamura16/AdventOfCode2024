@@ -11,19 +11,25 @@ public class Program
         var fileReader = new FileReaderTool();
         var lines = fileReader.ReadFile(filePath);
 
-        string pattern = @"mul\((\d{1,3}),(\d{1,3})\)";
+        var input = "";
+        foreach (var line in lines)
+        {
+            input += line;
+        }
+
+        string instructionsPattern = @"don't\(\).*?do\(\)";
+        string withoutInstructions = Regex.Replace(input, instructionsPattern, "");
+
+        string multiplyPattern = @"mul\((\d{1,3}),(\d{1,3})\)";
+        var multiplyRegex = new Regex(multiplyPattern);
+        var matches = multiplyRegex.Matches(withoutInstructions);
 
         int result = 0;
-        var regex = new Regex(pattern);
-        foreach (var line in lines) 
+        foreach (Match match in matches)
         {
-            var matches = regex.Matches(line);
-            foreach (Match match in matches) 
-            {
-                var firstNumber = int.Parse(match.Groups[1].Value);
-                var secondNumber = int.Parse(match.Groups[2].Value);
-                result += firstNumber * secondNumber;
-            }
+            var firstNumber = int.Parse(match.Groups[1].Value);
+            var secondNumber = int.Parse(match.Groups[2].Value);
+            result += firstNumber * secondNumber;
         }
         Console.WriteLine(result);
     }
